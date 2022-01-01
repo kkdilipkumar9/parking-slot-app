@@ -1,0 +1,7 @@
+{
+    "env": {
+        "MONGO_USER": "dkumar",
+        "MONGO_PASSWORD": "password123456",
+        "MONGO_DATABASE": "parkingLot"
+    }
+}
