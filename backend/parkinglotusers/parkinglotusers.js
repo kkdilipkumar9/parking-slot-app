@@ -24,4 +24,15 @@ async function getValidUserForParkingSlot(filter){
       });
   }
 
-module.exports= {getRegisteredUser,getValidUserForParkingSlot,updateParkingStatusForUser}
+  function resetAllParkingUserStatus(){
+    let updateData= {
+        parking_id:'',
+        parking_location:'',
+        parking_status:''
+       }
+       ParkingLotUsers.updateMany({},updateData).then(respData=>{
+        console.log('user updated',respData)
+       });
+  }
+
+module.exports= {getRegisteredUser,getValidUserForParkingSlot,updateParkingStatusForUser,resetAllParkingUserStatus}

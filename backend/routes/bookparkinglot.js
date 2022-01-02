@@ -3,6 +3,7 @@ const ParkingLot = require('../models/parkingLot');
 const router = express.Router();
 const parkinglotuser = require('../parkinglotusers/parkinglotusers');
 const { getRegisteredUser, updateParkingStatusForUser } = require('../parkinglotusers/parkinglotusers');
+const PARKING_WAITING_PERIOD=1000 * 60 * 1;
 router.post('/bookparkinglot', (req, resp, next) => {
     console.log('In routes');
     let requestData = req.body;
@@ -91,7 +92,7 @@ function bookParkingLot(filter, updateData, resp) {
             console.log('in promise',parkingLot);
             setInterval(() => {
                 resolve(parkingLot);
-            }, 1000 * 60 * 1);
+            },PARKING_WAITING_PERIOD);
         });
         parkingLotOccupiedPrms.then((data) => {
             console.log('parking to be cancelled', data);
@@ -126,27 +127,52 @@ function bookParkingLot(filter, updateData, resp) {
 }
 
 router.post('/occupyparkinglot', (req, resp, next) => {
+    let filter={}
+    filter.parking_id =  req.body.parking_id;
+    filter.status= "booked"
     console.log('in occupy parking');
-    let requestData = req.body;
-    ParkingLot.findById(requestData._id).then(data => {
-        if (data.status == 'booked') {
-            ParkingLot.findByIdAndUpdate(data._id, { status: "occupied" }, { returnOriginal: false }).then(updatedData => {
+            ParkingLot.findOneAndUpdate(filter,{status:"occupied"}, { returnOriginal: false }).then(updatedData => {
+                if(updatedData){
+                    let userdata = { ...updatedData,
+                        status: 'occupied'
+                    }
+                    updateParkingStatusForUser(userdata);
                 resp.status(200).json(
                     {
-                        message: 'Parking Slot occupied',
+                        message: 'Parking slot occupied',
                         data: updatedData
                     }
                 );
-            })
-        }
-        console.log('Occupy parking', data);
-    });
-    //   ParkingLot.findByIdAndUpdate(data._id,{status:"Occupied"}).then(updated=>{
-
-    //   }
-
-    //    );
+            }else{
+                resp.status(404).json(
+                    {
+                        message: 'Parking slot not found',
+                        data: updatedData
+                    }
+                );
+            }
+            });
 });
+router.post('/resetparkinglot',(req,resp,next)=>{
+    let filter=  req.body;
+    console.log(filter)
+   let updateData= {
+    user_id:'',
+    request_time:'',
+    allocation_time:'',
+    allocation_endtime:'',
+    status:''
+   }
+    ParkingLot.updateMany({},updateData).then(respData=>{
+        parkinglotuser.resetAllParkingUserStatus()
+        resp.status(200).json(
+            {
+                message:'parking slot data reset successfully',
+                data:respData
+            }
+        )
+    })
+})
 
 function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);

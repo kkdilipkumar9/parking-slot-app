@@ -8,7 +8,7 @@ router.use('/getallparkingslot',(req,resp,next)=>{
         ParkingLot.find({}).then(data=>{
         resp.status(200).json(
             {
-                message:'request success',
+                message:'success',
                 data:data
             }
         )
@@ -22,20 +22,28 @@ router.use('/getoccupiedparkingslot',(req,resp,next)=>{
     ParkingLot.find(filter).then(data=>{
     resp.status(200).json(
         {
-            message:'request success',
+            message:'success',
             data:data
         }
     )
 })
 
 });
-router.use('/getparkinglotusers',(req,resp,next)=>{
-    let filter={status :'occupied'}
-    parkinglotuser.getRegisteredUser().then(data=>{
-        console.log('data is',data);
+router.use('/getparkinglotusersbystatus',(req,resp,next)=>{
+    let filter={}
+    if(req.query.status){
+        filter={parking_status:req.query.status}
+    }else{
+        filter={}
+    }
+console.log('status is',req.query.status);
+    parkinglotuser.getRegisteredUser(filter).then(data=>{
+       // console.log('data is',data);
     resp.status(200).json(
         {
-            message:'request success',
+            message:'success',
+            count:data.length,
+            parking_status:filter.parking_status?req.query.status:'all',
             data:data
         }
 
