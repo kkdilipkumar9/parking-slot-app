@@ -3,7 +3,7 @@ const ParkingLot = require('../models/parkingLot');
 const router = express.Router();
 const parkinglotuser = require('../parkinglotusers/parkinglotusers');
 const { getRegisteredUser, updateParkingStatusForUser } = require('../parkinglotusers/parkinglotusers');
-const PARKING_WAITING_PERIOD=1000 * 60 * 1;
+const PARKING_WAITING_PERIOD=1000 * 60 * 30;
 router.post('/bookparkinglot', (req, resp, next) => {
     console.log('In routes');
     let requestData = req.body;
