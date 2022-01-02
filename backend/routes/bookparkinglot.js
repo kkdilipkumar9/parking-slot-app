@@ -49,7 +49,6 @@ function checkForVacantParkingLot(reqData, resp) {
     }
     filter.category = reqData.category;
     filter.status = "";
-    //////////////////////////////////
     ParkingLot.findOne(filter).then(result => {
         console.log(result);
         if (result) {
@@ -61,7 +60,7 @@ function checkForVacantParkingLot(reqData, resp) {
         }
     });
 }
-/////////////////////////////////
+
 function bookParkingLot(filter, updateData, resp) {
     console.log('filter data is', filter);
     let parkingLot

@@ -3,12 +3,19 @@ const ParkingLot = require('../models/parkingLot');
 const parkinglotuser = require('../parkinglotusers/parkinglotusers')
 const router = express.Router();
 
-router.use('/getallparkingslot',(req,resp,next)=>{
+router.use('/getallparkingslotbystatus',(req,resp,next)=>{
+    let filter={}
+    if(req.query.status){
+        filter={status:req.query.status}
+    }else{
+        filter={}
+    }
         console.log("in all parking slot");
-        ParkingLot.find({}).then(data=>{
+        ParkingLot.find(filter).then(data=>{
         resp.status(200).json(
             {
                 message:'success',
+                count:data.length,
                 data:data
             }
         )
